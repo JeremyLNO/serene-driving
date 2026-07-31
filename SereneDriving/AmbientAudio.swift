@@ -27,6 +27,9 @@ final class AmbientAudio {
     private var chimeEnv = Double(0)
     private var chimePhase = [Double](repeating: 0, count: 3)
     private var chimeRoot = Double(392)
+    private var sparkleEnv = Double(0)
+    private var sparklePhase = [Double](repeating: 0, count: 2)
+    private var sparkleRoot = Double(1568)
     private var masterTarget = Double(0)
     private var master = Double(0)
     private var engineTimbre = Double(0)     // 0 = airy, 1 = motor
@@ -81,6 +84,12 @@ final class AmbientAudio {
 
     /// 0 = gripping, 1 = fully sideways. Opens a low, breathy layer under the pad.
     func setDrift(_ amount: Float) { drift = max(0, min(1, amount)) }
+
+    /// A bright, short ping for picking a gem up — two octaves above the pad.
+    func sparkle() {
+        sparkleRoot = (padTarget.first ?? 98) * 16
+        sparkleEnv = 1
+    }
 
     /// A soft bell when a new world settles in, tuned to that world's key.
     func chime() {
@@ -186,7 +195,21 @@ final class AmbientAudio {
             let engineLevel = (0.012 + speedSmoothed * 0.075) * engineTimbre * modeDrive
             let hum = motor * engineLevel
 
-            let sample = Float((pad + shimmer + wind + slide + hum + bell) * master * 0.9)
+            var ping = 0.0
+            if sparkleEnv > 0.0002 {
+                sparkleEnv *= 0.99988
+                for i in 0..<sparklePhase.count {
+                    let f = sparkleRoot * [1.0, 1.498][i]
+                    sparklePhase[i] += f * dt
+                    if sparklePhase[i] > 1 { sparklePhase[i] -= 1 }
+                    ping += sin(sparklePhase[i] * 2 * .pi) * [0.6, 0.4][i]
+                }
+                ping *= sparkleEnv * sparkleEnv * 0.05
+            } else {
+                sparkleEnv = 0
+            }
+
+            let sample = Float((pad + shimmer + wind + slide + hum + bell + ping) * master * 0.9)
             let clipped = max(-0.98, min(0.98, sample))
 
             for buffer in abl {

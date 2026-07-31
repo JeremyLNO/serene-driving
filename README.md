@@ -39,6 +39,10 @@ Three buttons, top right:
   the vehicle slides through corners. Braking mid-corner breaks the back end
   loose. Sliding throws tyre smoke and leaves deeper marks.
 
+Speed mode also scatters **diamonds** in short curving trails ahead of you —
+drive through them to collect them. The counter at the top of the screen starts
+from zero every time the app is launched; nothing is saved and nothing is lost.
+
 ## What's procedural
 
 Everything. There are no art assets in the project — the whole game is generated

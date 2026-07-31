@@ -71,6 +71,8 @@ struct GameView: View {
             .offset(y: -120)
             .allowsHitTesting(false)
 
+            diamondCounter
+
             Text(mode.title.uppercased())
                 .font(.system(size: 12, weight: .light, design: .rounded))
                 .tracking(5)
@@ -205,6 +207,33 @@ struct GameView: View {
         guard a > dead else { return 0 }
         let n = (a - dead) / (1 - dead)
         return (v < 0 ? -1 : 1) * n * n * (3 - 2 * n)
+    }
+
+    /// Only meaningful in Speed mode, so it only shows there.
+    private var diamondCounter: some View {
+        VStack {
+            HStack(spacing: 7) {
+                Image(systemName: "diamond.fill")
+                    .font(.system(size: 13, weight: .light))
+                    .foregroundStyle(Color(rgb(0x9FE4F0)))
+                Text("\(model.diamonds)")
+                    .font(.system(size: 17, weight: .light, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.white.opacity(0.9))
+                    .contentTransition(.numericText())
+            }
+            .padding(.horizontal, 15)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial.opacity(0.5), in: Capsule())
+            .overlay(Capsule().strokeBorder(.white.opacity(0.16), lineWidth: 0.8))
+            .shadow(color: .black.opacity(0.3), radius: 8)
+            .padding(.top, 10)
+            Spacer()
+        }
+        .opacity(mode == .speed ? 1 : 0)
+        .animation(.easeInOut(duration: 0.5), value: mode)
+        .animation(.spring(duration: 0.35), value: model.diamonds)
+        .allowsHitTesting(false)
     }
 
     // MARK: - Overlays

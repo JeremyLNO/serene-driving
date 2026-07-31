@@ -32,6 +32,7 @@ final class WorldScene: NSObject, SCNSceneRendererDelegate {
 
     private var terrain: TerrainSystem?
     private var landmarks: LandmarkSystem?
+    private var diamonds: DiamondField?
     private var water: WaterSystem?
     private var tracks: TrackSystem?
     private var ambience: AmbienceDirector?
@@ -42,6 +43,7 @@ final class WorldScene: NSObject, SCNSceneRendererDelegate {
         didSet {
             vehicle?.setMode(mode)
             audio.setMode(mode)
+            diamonds?.isActive = (mode == .speed)
         }
     }
 
@@ -121,6 +123,8 @@ final class WorldScene: NSObject, SCNSceneRendererDelegate {
         terrain?.removeAll()
         terrain?.root.removeFromParentNode()
         landmarks?.root.removeFromParentNode()
+        diamonds?.clear()
+        diamonds?.root.removeFromParentNode()
         water?.node.removeFromParentNode()
         tracks?.node.removeFromParentNode()
         rig?.root.removeFromParentNode()
@@ -150,6 +154,12 @@ final class WorldScene: NSObject, SCNSceneRendererDelegate {
         let lm = landmarks ?? LandmarkSystem(biome: b)
         worldRoot.addChildNode(lm.root)
         landmarks = lm
+
+        let df = diamonds ?? DiamondField(biome: b)
+        df.reset(biome: b)
+        df.isActive = (mode == .speed)
+        worldRoot.addChildNode(df.root)
+        diamonds = df
 
         let tr = TrackSystem(biome: b)
         worldRoot.addChildNode(tr.node)
@@ -366,6 +376,12 @@ final class WorldScene: NSObject, SCNSceneRendererDelegate {
                            airborne: false)
         }
         ambience?.update(dt: dt, around: v.position, heading: v.heading)
+
+        if let picked = diamonds?.update(around: v.position, heading: v.heading, time: totalTime), picked > 0 {
+            audio.sparkle()
+            haptics.impact(0.32)
+            DispatchQueue.main.async { [weak self] in self?.model?.diamonds += picked }
+        }
 
         if let found = landmarks?.update(playerAt: v.position) {
             haptics.discovery()

@@ -18,6 +18,9 @@ final class GameModel: ObservableObject {
     @Published var showControlsHint: Bool = true
     @Published var soundOn: Bool = true
 
+    /// Reset on every launch on purpose — nothing here is meant to accumulate.
+    @Published var diamonds: Int = 0
+
     @Published var landmarkName: String = ""
     @Published var landmarkOpacity: Double = 0
 
