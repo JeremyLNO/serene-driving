@@ -39,11 +39,28 @@ jobs:
 
       - name: Write App Store Connect API key
         env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          RAW_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          RAW_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
         run: |
+          # A stray newline in either identifier makes Apple answer 401 on
+          # listTeams, which surfaces as an unhelpful "Communication with Apple
+          # failed". Strip whitespace and check the shapes before we build.
+          KEY_ID=$(printf '%s' "$RAW_KEY_ID" | tr -d '[:space:]')
+          ISSUER_ID=$(printf '%s' "$RAW_ISSUER_ID" | tr -d '[:space:]')
+          echo "key id: ${#KEY_ID} chars (expect 10), issuer: ${#ISSUER_ID} chars (expect 36)"
+          [ ${#KEY_ID} -eq 10 ] || { echo "::error::ASC_KEY_ID is ${#KEY_ID} chars, expected 10"; exit 1; }
+          [ ${#ISSUER_ID} -eq 36 ] || { echo "::error::ASC_ISSUER_ID is ${#ISSUER_ID} chars, expected a 36-char UUID"; exit 1; }
+
           mkdir -p ~/private_keys
-          printf '%s' "$ASC_KEY_P8" > ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          printf '%s' "$ASC_KEY_P8" > ~/private_keys/AuthKey_${KEY_ID}.p8
+          head -1 ~/private_keys/AuthKey_${KEY_ID}.p8 | grep -q "BEGIN PRIVATE KEY" || {
+            echo "::error::ASC_KEY_P8 does not start with a PEM private key header"
+            exit 1
+          }
+
+          echo "ASC_KEY_ID=$KEY_ID" >> "$GITHUB_ENV"
+          echo "ASC_ISSUER_ID=$ISSUER_ID" >> "$GITHUB_ENV"
 
       - name: Import signing certificate
         env:
@@ -73,9 +90,6 @@ jobs:
           }
 
       - name: Archive
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
           xcodebuild archive \
             -project SereneDriving.xcodeproj \
@@ -90,9 +104,6 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
       - name: Export & upload to TestFlight
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: |
           xcodebuild -exportArchive \
             -archivePath build/SereneDriving.xcarchive \
