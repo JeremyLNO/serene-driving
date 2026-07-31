@@ -7,7 +7,7 @@ set -euo pipefail
 DEV="${SD_DEVICE:-iPhone 16 Pro}"
 PROJ="$(cd "$(dirname "$0")" && pwd)"
 APP="$PROJ/build/Debug-iphonesimulator/SereneDriving.app"
-BUNDLE="company.lno.serenedriving"
+BUNDLE="com.lno.serenedriving"
 
 echo "▶︎ Building…"
 xcodebuild -project "$PROJ/SereneDriving.xcodeproj" -target SereneDriving \

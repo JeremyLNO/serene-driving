@@ -8,7 +8,7 @@ import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TARGET = "SereneDriving"
-BUNDLE_ID = "company.lno.serenedriving"
+BUNDLE_ID = "com.lno.serenedriving"
 SRC_DIR = os.path.join(ROOT, TARGET)
 PROJ_DIR = os.path.join(ROOT, TARGET + ".xcodeproj")
 
@@ -234,6 +234,7 @@ for conf_id, name, extra in [
 TARGET_COMMON = """\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 \t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 \t\t\t\tCODE_SIGN_STYLE = Automatic;
+\t\t\t\tDEVELOPMENT_TEAM = 2E6D4Q69QB;
 \t\t\t\tCURRENT_PROJECT_VERSION = 1;
 \t\t\t\tENABLE_PREVIEWS = YES;
 \t\t\t\tGENERATE_INFOPLIST_FILE = NO;

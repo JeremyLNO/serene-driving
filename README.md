@@ -77,7 +77,7 @@ SD_DEVICE="iPhone 16" ./build-run.sh
 python3 gen_pbxproj.py            # regenerate the project after adding files
 ```
 
-Portrait only. iOS 17+. Bundle id `company.lno.serenedriving`.
+Portrait only. iOS 17+. Bundle id `com.lno.serenedriving`.
 
 ## Releasing to TestFlight
 
