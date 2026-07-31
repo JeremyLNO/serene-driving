@@ -131,6 +131,16 @@ struct GameView: View {
                             host.world.controls.throttle = 0
                         }
                 )
+                // Double tap near the top of the screen moves on to the next
+                // place. Simultaneous and location-aware, so the whole screen
+                // stays available for driving.
+                .simultaneousGesture(
+                    SpatialTapGesture(count: 2)
+                        .onEnded { value in
+                            guard value.location.y < geo.size.height * 0.22 else { return }
+                            host.world.skipToNextWorld()
+                        }
+                )
                 .overlay(alignment: .topLeading) {
                     if let origin = stickOrigin {
                         stickView(origin: origin)

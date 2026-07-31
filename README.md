@@ -23,6 +23,10 @@ somewhere new, with a vehicle that suits it:
 Drag anywhere on screen. A thumb-stick appears where you touch: up to accelerate,
 down to brake and reverse, left/right to steer. Release and the vehicle coasts.
 
+**Double tap near the top of the screen** to move on to the next world without
+waiting for the minute to run out. The rest of the screen stays available for
+driving — the gesture is location-aware rather than a dedicated zone.
+
 Three buttons, top right:
 - **speaker** — mute the generated ambient audio
 - **leaf / bolt** — Serene mode ↔ Speed mode
