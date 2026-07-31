@@ -78,3 +78,26 @@ python3 gen_pbxproj.py            # regenerate the project after adding files
 ```
 
 Portrait only. iOS 17+. Bundle id `company.lno.serenedriving`.
+
+## Releasing to TestFlight
+
+Two paths, both needing an App Store Connect API key (Users and Access →
+Integrations → App Store Connect API).
+
+**CI** — every push to `main` runs `.github/workflows/testflight.yml`. Add these
+repo secrets under Settings → Secrets and variables → Actions:
+
+| Secret | Where it comes from |
+|---|---|
+| `ASC_KEY_ID` | the `XXXX` in `AuthKey_XXXX.p8` |
+| `ASC_ISSUER_ID` | shown above the key list in App Store Connect |
+| `ASC_KEY_P8` | the full contents of the `.p8` file |
+| `IOS_DEV_CERT_P12` | `base64 -i CI_Development.p12` |
+| `IOS_DEV_CERT_PASSWORD` | the password for that `.p12` |
+
+**From this Mac** — no secrets stored anywhere:
+
+```bash
+export ASC_KEY_ID=… ASC_ISSUER_ID=… ASC_KEY_PATH=…/AuthKey_….p8
+./release.sh
+```
