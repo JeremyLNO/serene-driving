@@ -107,6 +107,14 @@ final class TerrainSystem {
         case .deadWood:             return 0.3
         case .buoy:                 return 0.5
         case .bush, .shell, .dune:  return 0
+        case .autumnTree:           return 0.6
+        case .mesa:                 return 7.5
+        case .canyonSpire:          return 1.6
+        case .saltRidge:            return 0
+        case .basaltSpire:          return 1.1
+        case .lavaRock:             return 0.9
+        case .glowMushroom:         return 0.5
+        case .alienPod:             return 0.35
         }
     }
 

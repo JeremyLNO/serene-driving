@@ -6,17 +6,22 @@ you drive, and every minute the world quietly becomes somewhere else.
 ## The idea
 
 You start in an endless forest. Every 60 seconds the scene fades and you arrive
-somewhere new, with a vehicle that suits it:
+somewhere new, with a vehicle that suits it — twelve places in all:
 
-| World            | Vehicle    | Notes                                        |
-|------------------|------------|----------------------------------------------|
-| Whispering Forest| car        | rolling hills, pines, drifting pollen        |
-| Amber Dunes      | quad       | ridged dunes, cacti, blown sand              |
-| Sunlit Shore     | quad       | sand, lagoons, palms                         |
-| Open Sea         | boat       | faceted waves, islands, buoys                |
-| Quiet Snowfield  | car        | falling snow, snow-capped pines              |
-| Moon Basin       | rover      | craters, Earth in the sky, long shadows      |
-| Deep Space       | spaceship  | asteroid field, nebula, no ground at all     |
+| World            | Vehicle    | Notes                                          |
+|------------------|------------|------------------------------------------------|
+| Whispering Forest| car        | rolling hills, pines, drifting pollen          |
+| Golden Woods     | car        | autumn canopy, falling leaves                  |
+| Amber Dunes      | quad       | ridged dunes, cacti, blown sand                |
+| Red Canyon       | quad       | terraced mesas and hoodoos                     |
+| Sunlit Shore     | quad       | sand, lagoons, palms                           |
+| Open Sea         | boat       | faceted waves, islands, buoys                  |
+| Salt Flats       | car        | dead flat and bright — built for speed         |
+| Quiet Snowfield  | car        | falling snow, snow-capped pines                |
+| Ash Fields       | quad       | basalt spires, embers still glowing, ash       |
+| Moon Basin       | rover      | craters, Earth in the sky, long shadows        |
+| Lumen Valley     | rover      | bioluminescent mushrooms lighting the ground   |
+| Deep Space       | spaceship  | asteroid field, nebula, no ground at all       |
 
 ## Controls
 

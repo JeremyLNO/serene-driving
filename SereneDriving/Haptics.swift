@@ -155,6 +155,11 @@ extension Biome {
         case .snow:   return (0.38, 0.12)
         case .moon:   return (0.48, 0.30)
         case .space:  return (0.10, 0.05)
+        case .autumn: return (0.52, 0.36)
+        case .canyon: return (0.68, 0.45)
+        case .saltflats: return (0.30, 0.55)
+        case .volcano: return (0.80, 0.52)
+        case .alien:  return (0.44, 0.24)
         }
     }
 }

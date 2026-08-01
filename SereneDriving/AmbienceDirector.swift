@@ -49,6 +49,16 @@ final class AmbienceDirector {
             shootingStar(near: p, heading: heading)
         case .space:
             pick < 0.6 ? shootingStar(near: p, heading: heading) : comet(near: p, heading: heading)
+        case .autumn:
+            pick < 0.5 ? deer(near: p, heading: heading) : birds(near: p, heading: heading)
+        case .canyon:
+            pick < 0.55 ? tumbleweed(near: p, heading: heading) : birds(near: p, heading: heading)
+        case .saltflats:
+            pick < 0.4 ? tumbleweed(near: p, heading: heading) : birds(near: p, heading: heading)
+        case .volcano:
+            pick < 0.5 ? shootingStar(near: p, heading: heading) : birds(near: p, heading: heading)
+        case .alien:
+            pick < 0.5 ? shootingStar(near: p, heading: heading) : birds(near: p, heading: heading)
         }
     }
 

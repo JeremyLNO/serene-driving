@@ -53,6 +53,14 @@ enum PropFactory {
         case .deadWood:   node = deadWood(seed: seed)
         case .crystal:    node = crystal(seed: seed)
         case .satellite:  node = satellite()
+        case .autumnTree: node = autumnTree(seed: seed)
+        case .mesa:       node = mesa(seed: seed)
+        case .canyonSpire: node = canyonSpire(seed: seed)
+        case .saltRidge:  node = saltRidge(seed: seed)
+        case .basaltSpire: node = basaltSpire(seed: seed)
+        case .lavaRock:   node = lavaRock(seed: seed)
+        case .glowMushroom: node = glowMushroom(seed: seed)
+        case .alienPod:   node = alienPod(seed: seed)
         case .buoy:       node = buoy()
         case .shell:      node = shell(seed: seed)
         case .dune:       node = duneMound(seed: seed)
@@ -128,6 +136,182 @@ enum PropFactory {
             n.position = SCNVector3(rng.range(-0.4, 0.4), r * 0.7, rng.range(-0.4, 0.4))
             root.addChildNode(n)
         }
+        return root
+    }
+
+    // MARK: - Autumn
+
+    private static func autumnTree(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 909)
+        let root = SCNNode()
+        let bark = GeometryKit.material(rgb(0x6B4F38))
+        let h = rng.range(2.0, 3.2)
+        let trunk = SCNNode.cyl(radius: rng.range(0.18, 0.3), height: h, bark, segments: 7)
+        trunk.position = SCNVector3(0, h / 2, 0)
+        root.addChildNode(trunk)
+
+        let warm: [SIMD3<Float>] = [vec(0xC9762C), vec(0xD99B3A), vec(0xA85224), vec(0xB85A24), vec(0xE0B24A)]
+        for _ in 0..<Int(rng.range(3, 4.99)) {
+            let r = rng.range(1.0, 1.7)
+            let g = GeometryKit.blob(radius: r, roughness: 0.24, color: warm[Int(rng.next() * 4.99)],
+                                     seed: UInt64(rng.next() * 90000),
+                                     material: GeometryKit.solidVertexMaterial)
+            let n = SCNNode(geometry: g)
+            n.position = SCNVector3(rng.range(-0.6, 0.6), h + rng.range(0.2, 1.1), rng.range(-0.6, 0.6))
+            root.addChildNode(n)
+        }
+        return root
+    }
+
+    // MARK: - Canyon
+
+    private static func mesa(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1201)
+        let root = SCNNode()
+        let layers = Int(rng.range(2, 3.99))
+        var y: Float = 0
+        var radius = rng.range(5.5, 9.0)
+        let tints: [SIMD3<Float>] = [vec(0xB0603C), vec(0xC97A4A), vec(0x9A4E32)]
+
+        for i in 0..<layers {
+            let thickness = rng.range(2.2, 3.6)
+            let g = GeometryKit.blob(radius: radius, roughness: 0.10, color: tints[i % 3],
+                                     seed: UInt64(rng.next() * 90000),
+                                     material: GeometryKit.solidVertexMaterial)
+            let n = SCNNode(geometry: g)
+            n.scale = SCNVector3(1.0, thickness / radius, 0.92)
+            n.position = SCNVector3(rng.range(-0.5, 0.5), y + thickness * 0.5, rng.range(-0.5, 0.5))
+            n.eulerAngles = SCNVector3(0, rng.range(0, 6.28), 0)
+            root.addChildNode(n)
+            y += thickness * 0.92
+            radius *= rng.range(0.72, 0.86)
+        }
+        return root
+    }
+
+    private static func canyonSpire(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1303)
+        let root = SCNNode()
+        let steps = Int(rng.range(3, 5.99))
+        var y: Float = 0
+        var radius = rng.range(1.1, 1.9)
+        for i in 0..<steps {
+            let thickness = rng.range(1.2, 2.2)
+            // Hoodoos bulge and pinch as they rise.
+            let bulge: Float = i % 2 == 0 ? 1.25 : 0.78
+            let g = GeometryKit.blob(radius: radius * bulge, roughness: 0.14, color: vec(0xC07A4C),
+                                     seed: UInt64(rng.next() * 90000),
+                                     material: GeometryKit.solidVertexMaterial)
+            let n = SCNNode(geometry: g)
+            n.scale = SCNVector3(1, thickness / (radius * bulge), 1)
+            n.position = SCNVector3(0, y + thickness * 0.5, 0)
+            root.addChildNode(n)
+            y += thickness * 0.9
+            radius *= 0.92
+        }
+        return root
+    }
+
+    // MARK: - Salt
+
+    private static func saltRidge(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1407)
+        let g = GeometryKit.blob(radius: rng.range(1.8, 3.6), roughness: 0.12, color: vec(0xEAEFF3),
+                                 seed: seed, material: GeometryKit.solidVertexMaterial)
+        let n = SCNNode(geometry: g)
+        // A crusted plate barely lifted off the flat.
+        n.scale = SCNVector3(1.5, rng.range(0.05, 0.11), 1.0)
+        n.position = SCNVector3(0, 0.04, 0)
+        n.eulerAngles = SCNVector3(0, rng.range(0, 6.28), 0)
+        return n
+    }
+
+    // MARK: - Volcano
+
+    private static func basaltSpire(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1511)
+        let root = SCNNode()
+        let stone = GeometryKit.material(rgb(0x2A2630))
+        for _ in 0..<Int(rng.range(2, 4.99)) {
+            let h = rng.range(2.5, 6.0)
+            let col = SCNNode.cone(top: rng.range(0.18, 0.4), bottom: rng.range(0.5, 0.85),
+                                   height: h, stone, segments: 6)
+            col.position = SCNVector3(rng.range(-0.9, 0.9), h / 2, rng.range(-0.9, 0.9))
+            col.eulerAngles = SCNVector3(rng.range(-0.12, 0.12), rng.range(0, 6.28), rng.range(-0.12, 0.12))
+            root.addChildNode(col)
+        }
+        return root
+    }
+
+    private static func lavaRock(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1613)
+        let root = SCNNode()
+        let r = rng.range(0.7, 1.8)
+        let g = GeometryKit.blob(radius: r, roughness: 0.36, color: vec(0x241F26), seed: seed,
+                                 material: GeometryKit.solidVertexMaterial)
+        let n = SCNNode(geometry: g)
+        n.scale = SCNVector3(1, rng.range(0.5, 0.8), 1)
+        n.position = SCNVector3(0, r * 0.3, 0)
+        root.addChildNode(n)
+
+        // Heat still glowing in the cracks underneath.
+        if rng.chance(0.7) {
+            let ember = GeometryKit.material(rgb(0xFF8A3C), emission: rgb(0xE85A18))
+            let e = SCNNode.sphere(r * rng.range(0.3, 0.5), ember, segments: 8)
+            e.scale = SCNVector3(1.2, 0.28, 1.2)
+            e.position = SCNVector3(rng.range(-0.2, 0.2), r * 0.06, rng.range(-0.2, 0.2))
+            root.addChildNode(e)
+        }
+        return root
+    }
+
+    // MARK: - Alien
+
+    private static func glowMushroom(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1717)
+        let root = SCNNode()
+        let tints = [rgb(0x5FE8C8), rgb(0x8FA8FF), rgb(0xE07AD8), rgb(0x7FD8FF)]
+        let tint = tints[Int(rng.next() * 3.99)]
+        let stalkMat = GeometryKit.material(rgb(0x8E86B8))
+
+        for _ in 0..<Int(rng.range(1, 3.49)) {
+            let h = rng.range(1.4, 3.6)
+            let x = rng.range(-0.7, 0.7), z = rng.range(-0.7, 0.7)
+            let stalk = SCNNode.cyl(radius: rng.range(0.10, 0.20), height: h, stalkMat, segments: 7)
+            stalk.position = SCNVector3(x, h / 2, z)
+            root.addChildNode(stalk)
+
+            let capMat = GeometryKit.material(tint, emission: tint.withAlphaComponent(0.85))
+            let capR = rng.range(0.45, 0.95)
+            let cap = SCNNode.sphere(capR, capMat, segments: 12)
+            cap.scale = SCNVector3(1.25, 0.62, 1.25)
+            cap.position = SCNVector3(x, h, z)
+            root.addChildNode(cap)
+
+            // A little of that light spills onto the ground.
+            let under = SCNNode.cone(top: capR * 0.9, bottom: 0.05, height: 0.3, capMat, segments: 10)
+            under.position = SCNVector3(x, h - 0.18, z)
+            root.addChildNode(under)
+        }
+        return root
+    }
+
+    private static func alienPod(seed: UInt64) -> SCNNode {
+        var rng = SeededRandom(seed &+ 1819)
+        let root = SCNNode()
+        let shell = GeometryKit.material(rgb(0x3E3468))
+        let h = rng.range(1.0, 2.0)
+        let stalk = SCNNode.cyl(radius: 0.12, height: h, shell, segments: 6)
+        stalk.position = SCNVector3(0, h / 2, 0)
+        stalk.eulerAngles = SCNVector3(rng.range(-0.2, 0.2), 0, rng.range(-0.2, 0.2))
+        root.addChildNode(stalk)
+
+        let glow = rgb(0xB88AFF)
+        let pod = SCNNode.sphere(rng.range(0.3, 0.55),
+                                 GeometryKit.material(glow, emission: glow.withAlphaComponent(0.8)), segments: 10)
+        pod.scale = SCNVector3(0.85, 1.3, 0.85)
+        pod.position = SCNVector3(0, h + 0.25, 0)
+        root.addChildNode(pod)
         return root
     }
 

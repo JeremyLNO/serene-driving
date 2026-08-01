@@ -8,10 +8,12 @@ enum VehicleKind {
 enum PropKind {
     case pineTree, roundTree, bush, rock, cactus, palm, deadWood, snowPine, iceRock
     case moonRock, crystal, asteroid, satellite, buoy, islandPalm, shell, dune
+    case autumnTree, mesa, canyonSpire, saltRidge, basaltSpire, lavaRock
+    case glowMushroom, alienPod
 }
 
 enum AmbientParticle {
-    case none, pollen, sand, snow, spray, dust, stars
+    case none, pollen, sand, snow, spray, dust, stars, ash, leaves, spores
 }
 
 func rgb(_ hex: UInt32) -> UIColor {
@@ -27,7 +29,7 @@ func vec(_ hex: UInt32) -> SIMD3<Float> {
 
 struct Biome {
     enum Kind: Int, CaseIterable {
-        case forest, desert, beach, ocean, snow, moon, space
+        case forest, autumn, desert, canyon, beach, ocean, saltflats, snow, volcano, moon, alien, space
     }
 
     var kind: Kind
@@ -69,8 +71,8 @@ struct Biome {
     /// Soft ground keeps a record of where you drove.
     var leavesTracks: Bool {
         switch kind {
-        case .desert, .beach, .snow, .moon: return true
-        case .forest, .ocean, .space: return false
+        case .desert, .beach, .snow, .moon, .canyon, .saltflats, .volcano: return true
+        case .forest, .autumn, .ocean, .alien, .space: return false
         }
     }
 
@@ -99,6 +101,36 @@ struct Biome {
         case .moon:
             return Noise.fbm(p * 0.0110, octaves: 3) * 4.0
                  - Noise.ridged(p * 0.0190, octaves: 2) * 3.2
+        case .autumn:
+            return Noise.fbm(p * 0.0095, octaves: 4) * 6.5
+                 + Noise.fbm(p * 0.040, octaves: 3) * 1.1
+
+        case .canyon:
+            // Terraced mesas. The steps are eased rather than square: a hard
+            // quantise makes vertical cliffs that nothing can drive up and that
+            // the chase camera ends up buried inside.
+            let n = Noise.fbm(p * 0.0060, octaves: 4)
+            let steps: Float = 3.0
+            let scaled = n * steps
+            let base = scaled.rounded(.down)
+            let frac = scaled - base
+            let t = simd_clamp((frac - 0.62) / 0.38, 0, 1)
+            let ramp = t * t * (3 - 2 * t)
+            return (base + ramp) / steps * 17.0 + Noise.fbm(p * 0.045, octaves: 2) * 0.8
+
+        case .saltflats:
+            // Almost dead flat — the point is the horizon and the speed.
+            return Noise.fbm(p * 0.0045, octaves: 3) * 1.1
+                 + Noise.fbm(p * 0.060, octaves: 2) * 0.12
+
+        case .volcano:
+            return Noise.ridged(p * 0.0070, octaves: 3) * 9.0 - 2.5
+                 + Noise.fbm(p * 0.0180, octaves: 3) * 2.6
+
+        case .alien:
+            return Noise.fbm(p * 0.0090, octaves: 4) * 7.0
+                 + Noise.ridged(p * 0.0150, octaves: 2) * 3.4 - 1.5
+
         case .space:
             return 0
         }
@@ -131,6 +163,20 @@ struct Biome {
               props: [.pineTree, .roundTree, .roundTree, .bush, .rock, .deadWood],
               propDensity: 16, particle: .pollen),
 
+        Biome(kind: .autumn,
+              name: "Golden Woods",
+              subtitle: "the year turning",
+              skyZenith: rgb(0x6FA8D8), skyHorizon: rgb(0xF7E3C2), skyLow: rgb(0xD9BE92),
+              sunColor: rgb(0xFFEAC4), sunIntensity: 1000, ambientColor: rgb(0xCBB89C), ambientIntensity: 470,
+              sunElevation: 0.44, stars: false,
+              fogColor: rgb(0xE9D7BC), fogStart: 65, fogEnd: 220,
+              hasTerrain: true,
+              groundLow: vec(0x7A6038), groundHigh: vec(0xB78C48), groundSlope: vec(0x8A7358),
+              waterLevel: nil, waterColor: .clear, waterOpacity: 0,
+              vehicle: .car,
+              props: [.autumnTree, .autumnTree, .roundTree, .bush, .rock, .deadWood],
+              propDensity: 16, particle: .leaves),
+
         Biome(kind: .desert,
               name: "Amber Dunes",
               subtitle: "nothing but horizon",
@@ -144,6 +190,20 @@ struct Biome {
               vehicle: .quad,
               props: [.cactus, .rock, .deadWood, .bush, .dune],
               propDensity: 8, particle: .sand),
+
+        Biome(kind: .canyon,
+              name: "Red Canyon",
+              subtitle: "wind and stone",
+              skyZenith: rgb(0x5F9AD0), skyHorizon: rgb(0xF1CCA6), skyLow: rgb(0xD9A279),
+              sunColor: rgb(0xFFE3B8), sunIntensity: 1200, ambientColor: rgb(0xE0B896), ambientIntensity: 440,
+              sunElevation: 0.50, stars: false,
+              fogColor: rgb(0xEBC9A8), fogStart: 80, fogEnd: 235,
+              hasTerrain: true,
+              groundLow: vec(0xA85C3E), groundHigh: vec(0xD9905E), groundSlope: vec(0x8E4A32),
+              waterLevel: nil, waterColor: .clear, waterOpacity: 0,
+              vehicle: .quad,
+              props: [.mesa, .canyonSpire, .canyonSpire, .rock, .bush, .deadWood],
+              propDensity: 6, particle: .sand),
 
         Biome(kind: .beach,
               name: "Sunlit Shore",
@@ -173,6 +233,20 @@ struct Biome {
               props: [.islandPalm, .rock, .buoy, .palm],
               propDensity: 7, particle: .spray),
 
+        Biome(kind: .saltflats,
+              name: "Salt Flats",
+              subtitle: "nothing in the way",
+              skyZenith: rgb(0x77B4E4), skyHorizon: rgb(0xEFF4F8), skyLow: rgb(0xDCE6EC),
+              sunColor: rgb(0xFFFDF6), sunIntensity: 1150, ambientColor: rgb(0xD8E4EE), ambientIntensity: 620,
+              sunElevation: 0.60, stars: false,
+              fogColor: rgb(0xE9F0F5), fogStart: 100, fogEnd: 260,
+              hasTerrain: true,
+              groundLow: vec(0xD4DBE0), groundHigh: vec(0xF5F8FA), groundSlope: vec(0xB4BCC4),
+              waterLevel: nil, waterColor: .clear, waterOpacity: 0,
+              vehicle: .car,
+              props: [.saltRidge, .saltRidge, .rock],
+              propDensity: 5, particle: .dust),
+
         Biome(kind: .snow,
               name: "Quiet Snowfield",
               subtitle: "everything is soft",
@@ -187,6 +261,20 @@ struct Biome {
               props: [.snowPine, .snowPine, .iceRock, .rock, .deadWood],
               propDensity: 13, particle: .snow),
 
+        Biome(kind: .volcano,
+              name: "Ash Fields",
+              subtitle: "the ground remembers",
+              skyZenith: rgb(0x2A1E28), skyHorizon: rgb(0x8E4A38), skyLow: rgb(0x4A2A26),
+              sunColor: rgb(0xFFB07A), sunIntensity: 820, ambientColor: rgb(0x7A4A44), ambientIntensity: 400,
+              sunElevation: 0.20, stars: false,
+              fogColor: rgb(0x5C3832), fogStart: 55, fogEnd: 190,
+              hasTerrain: true,
+              groundLow: vec(0x2E2A2E), groundHigh: vec(0x5A5050), groundSlope: vec(0x1E1A1C),
+              waterLevel: nil, waterColor: .clear, waterOpacity: 0,
+              vehicle: .quad,
+              props: [.basaltSpire, .lavaRock, .lavaRock, .rock, .deadWood],
+              propDensity: 12, particle: .ash),
+
         Biome(kind: .moon,
               name: "Moon Basin",
               subtitle: "gravity forgot you",
@@ -200,6 +288,20 @@ struct Biome {
               vehicle: .rover,
               props: [.moonRock, .moonRock, .rock, .crystal],
               propDensity: 10, particle: .dust),
+
+        Biome(kind: .alien,
+              name: "Lumen Valley",
+              subtitle: "nothing here has a name",
+              skyZenith: rgb(0x160D30), skyHorizon: rgb(0x4A2A6E), skyLow: rgb(0x241846),
+              sunColor: rgb(0xC9A8FF), sunIntensity: 700, ambientColor: rgb(0x5C4090), ambientIntensity: 430,
+              sunElevation: 0.35, stars: true,
+              fogColor: rgb(0x2A1A4A), fogStart: 70, fogEnd: 215,
+              hasTerrain: true,
+              groundLow: vec(0x2E2A5A), groundHigh: vec(0x4E4A8E), groundSlope: vec(0x241E46),
+              waterLevel: nil, waterColor: .clear, waterOpacity: 0,
+              vehicle: .rover,
+              props: [.glowMushroom, .glowMushroom, .alienPod, .crystal, .rock],
+              propDensity: 13, particle: .spores),
 
         Biome(kind: .space,
               name: "Deep Space",

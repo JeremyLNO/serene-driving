@@ -64,8 +64,16 @@ struct WorldMood {
             if time == .night { options += [.aurora, .aurora] }
         case .beach, .ocean:
             options += [.rain, .mist]
-        case .moon, .space:
+        case .moon, .space, .alien:
             options = [.clear]
+        case .autumn:
+            options += [.rain, .rain]
+        case .canyon:
+            options = [.clear, .clear, .clear, .clear, .mist]
+        case .saltflats:
+            options = [.clear, .clear, .clear, .mist]
+        case .volcano:
+            options = [.clear, .clear, .mist]
         }
 
         let weather = options[Int(rng.next() * Float(options.count - 1) + 0.5)]

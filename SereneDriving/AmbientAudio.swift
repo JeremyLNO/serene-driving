@@ -110,6 +110,11 @@ final class AmbientAudio {
         case .snow:    root = 130.81; ratios = [1, 1.2, 1.5, 2.0, 2.4]
         case .moon:    root = 65.41; ratios = [1, 1.5, 2.0, 3.0, 4.0]
         case .space:   root = 73.42; ratios = [1, 1.334, 1.5, 2.0, 2.667]
+        case .autumn:  root = 92.50; ratios = [1, 1.2, 1.5, 1.8, 2.4]
+        case .canyon:  root = 77.78; ratios = [1, 1.125, 1.5, 2.0, 2.5]
+        case .saltflats: root = 116.54; ratios = [1, 1.5, 2.0, 3.0, 4.0]
+        case .volcano: root = 61.74; ratios = [1, 1.2, 1.5, 1.6, 2.4]
+        case .alien:   root = 103.83; ratios = [1, 1.414, 1.5, 2.0, 2.828]
         }
         padTarget = ratios.map { root * $0 }
 

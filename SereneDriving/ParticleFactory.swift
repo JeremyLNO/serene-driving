@@ -190,6 +190,51 @@ enum ParticleFactory {
             ps.spreadingAngle = 180
             ps.emitterShape = SCNBox(width: 120, height: 90, length: 120, chamferRadius: 0)
 
+        case .ash:
+            ps.blendMode = .alpha
+            ps.birthRate = 150
+            ps.particleLifeSpan = 11
+            ps.particleLifeSpanVariation = 4
+            ps.particleSize = 0.055
+            ps.particleSizeVariation = 0.04
+            ps.particleColor = rgb(0x6A5E5A).withAlphaComponent(0.75)
+            ps.particleVelocity = 1.1
+            ps.particleVelocityVariation = 0.8
+            ps.emittingDirection = SCNVector3(0.3, 1, 0.1)
+            ps.spreadingAngle = 65
+            ps.acceleration = SCNVector3(0.15, 0.05, 0)
+
+        case .leaves:
+            ps.blendMode = .alpha
+            ps.birthRate = 90
+            ps.particleLifeSpan = 12
+            ps.particleLifeSpanVariation = 4
+            ps.particleSize = 0.11
+            ps.particleSizeVariation = 0.06
+            ps.particleColor = rgb(0xD08A3A)
+            ps.particleColorVariation = SCNVector4(0.10, 0.16, 0.06, 0.25)
+            ps.particleVelocity = 1.5
+            ps.particleVelocityVariation = 1.0
+            ps.emittingDirection = SCNVector3(0.35, -1, 0.15)
+            ps.spreadingAngle = 55
+            ps.acceleration = SCNVector3(0.4, -0.1, 0.15)
+            ps.particleAngularVelocity = 130
+            ps.particleAngularVelocityVariation = 160
+
+        case .spores:
+            ps.birthRate = 130
+            ps.particleLifeSpan = 14
+            ps.particleLifeSpanVariation = 5
+            ps.particleSize = 0.07
+            ps.particleSizeVariation = 0.05
+            ps.particleColor = rgb(0x7FE8D0)
+            ps.particleColorVariation = SCNVector4(0.25, 0.12, 0.3, 0.35)
+            ps.particleVelocity = 0.45
+            ps.particleVelocityVariation = 0.4
+            ps.emittingDirection = SCNVector3(0, 1, 0)
+            ps.spreadingAngle = 180
+            ps.particleAngularVelocity = 20
+
         case .none:
             return nil
         }

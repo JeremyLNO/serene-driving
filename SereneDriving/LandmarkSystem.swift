@@ -121,6 +121,11 @@ enum LandmarkFactory {
              .ocean:   return rgb(0xC8F2FF)
         case .moon:    return rgb(0xBFD8FF)
         case .space:   return rgb(0xD6C8FF)
+        case .autumn:  return rgb(0xFFD9A0)
+        case .canyon:  return rgb(0xFFC48A)
+        case .saltflats: return rgb(0xEAF4FF)
+        case .volcano: return rgb(0xFF9A55)
+        case .alien:   return rgb(0x8FF0D8)
         }
     }
 
@@ -133,12 +138,17 @@ enum LandmarkFactory {
         case .ocean:   return lighthouse(&rng, name: "The Lonely Light", island: true)
         case .moon:    return monolith(&rng)
         case .space:   return gate(&rng)
+        case .autumn:  return greatTree(&rng, autumn: true)
+        case .canyon:  return rockArch(&rng, stone: vec(0xB0603C), name: "The Wind Gate")
+        case .saltflats: return monolith(&rng)
+        case .volcano: return rockArch(&rng, stone: vec(0x2E2830), name: "The Black Arch")
+        case .alien:   return giantMushroom(&rng)
         }
     }
 
     // MARK: Forest
 
-    private static func greatTree(_ rng: inout SeededRandom) -> Built {
+    private static func greatTree(_ rng: inout SeededRandom, autumn: Bool = false) -> Built {
         let root = SCNNode()
         let bark = GeometryKit.material(rgb(0x6A5039))
         let height = rng.range(20, 26)
@@ -156,7 +166,9 @@ enum LandmarkFactory {
             root.addChildNode(buttress)
         }
 
-        let greens: [SIMD3<Float>] = [vec(0x3E6B3F), vec(0x4E7F49), vec(0x355E38)]
+        let greens: [SIMD3<Float>] = autumn
+            ? [vec(0xC9762C), vec(0xD99B3A), vec(0xA85224)]
+            : [vec(0x3E6B3F), vec(0x4E7F49), vec(0x355E38)]
         for i in 0..<9 {
             let r = rng.range(4.5, 7.5)
             let g = GeometryKit.blob(radius: r, roughness: 0.20, color: greens[i % 3],
@@ -169,7 +181,7 @@ enum LandmarkFactory {
                                     sin(a) * rng.range(1, 5.5))
             root.addChildNode(n)
         }
-        return Built(node: root, name: "The Old Oak", radius: 3.2)
+        return Built(node: root, name: autumn ? "The Last Gold" : "The Old Oak", radius: 3.2)
     }
 
     // MARK: Snow
@@ -205,9 +217,10 @@ enum LandmarkFactory {
 
     // MARK: Desert
 
-    private static func rockArch(_ rng: inout SeededRandom) -> Built {
+    private static func rockArch(_ rng: inout SeededRandom,
+                                stone: SIMD3<Float> = vec(0xC08D5C),
+                                name: String = "The Sandstone Arch") -> Built {
         let root = SCNNode()
-        let stone = vec(0xC08D5C)
         let span: Float = 16
         let height = rng.range(15, 19)
 
@@ -235,7 +248,7 @@ enum LandmarkFactory {
             n.scale = SCNVector3(1.1, 0.8, 1)
             root.addChildNode(n)
         }
-        return Built(node: root, name: "The Sandstone Arch", radius: 9.5)
+        return Built(node: root, name: name, radius: 9.5)
     }
 
     // MARK: Shore & sea
@@ -310,6 +323,52 @@ enum LandmarkFactory {
         root.addChildNode(ln)
 
         return Built(node: root, name: name, radius: island ? 12 : 3.6, floatsOnWater: island)
+    }
+
+    // MARK: Alien
+
+    private static func giantMushroom(_ rng: inout SeededRandom) -> Built {
+        let root = SCNNode()
+        let stalkMat = GeometryKit.material(rgb(0x9A90C8))
+        let glow = rgb(0x6FE8C8)
+        let capMat = GeometryKit.material(glow, emission: glow.withAlphaComponent(0.9))
+
+        let height = rng.range(17, 22)
+        let stalk = SCNNode.cone(top: 1.2, bottom: 2.4, height: height, stalkMat, segments: 12)
+        stalk.position = SCNVector3(0, height / 2, 0)
+        root.addChildNode(stalk)
+
+        let capR = rng.range(9, 12)
+        let cap = SCNNode.sphere(capR, capMat, segments: 18)
+        cap.scale = SCNVector3(1.15, 0.5, 1.15)
+        cap.position = SCNVector3(0, height + 1.5, 0)
+        root.addChildNode(cap)
+
+        // Gills underneath, throwing light down on the ground.
+        let gills = SCNNode.cone(top: capR * 0.92, bottom: 0.6, height: 2.4, capMat, segments: 16)
+        gills.position = SCNVector3(0, height, 0)
+        root.addChildNode(gills)
+
+        let light = SCNLight()
+        light.type = .omni
+        light.color = glow
+        light.intensity = 1100
+        light.attenuationEndDistance = 55
+        let ln = SCNNode()
+        ln.light = light
+        ln.position = SCNVector3(0, height - 1, 0)
+        root.addChildNode(ln)
+
+        // A few smaller ones keeping it company.
+        for _ in 0..<4 {
+            let small = PropFactory.prototype(.glowMushroom, seed: UInt64(rng.next() * 90000))
+            let a = rng.range(0, 2 * .pi)
+            let d = rng.range(7, 15)
+            small.position = SCNVector3(cos(a) * d, 0, sin(a) * d)
+            small.scale = SCNVector3(2.2, 2.2, 2.2)
+            root.addChildNode(small)
+        }
+        return Built(node: root, name: "The Lantern", radius: 3.0)
     }
 
     // MARK: Moon
