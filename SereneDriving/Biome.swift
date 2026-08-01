@@ -87,8 +87,9 @@ struct Biome {
             return Noise.ridged(p * 0.0075, octaves: 3) * 11.0 - 3.0
                  + Noise.fbm(p * 0.052, octaves: 2) * 0.5
         case .beach:
-            // Mostly sand, with lagoons and inlets cut into it.
-            return Noise.fbm(p * 0.0072, octaves: 4) * 7.0 + 3.2
+            // Sand with real lagoons cut into it — about a fifth of the shore is
+            // water, which is what makes it a shore rather than a dune field.
+            return Noise.fbm(p * 0.0072, octaves: 4) * 7.0 + 1.6
                  + Noise.fbm(p * 0.045, octaves: 2) * 0.4
         case .ocean:
             // Mostly deep water, with the occasional island to steer around.

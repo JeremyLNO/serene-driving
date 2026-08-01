@@ -206,14 +206,47 @@ final class AmbienceDirector {
     // MARK: - Dolphin
 
     private func dolphin(near p: SIMD3<Float>, heading: Float) {
-        let pod = SCNNode()
-        let count = Int(rng.range(1, 3.49))
-        let spot = stageSpot(p, heading, distance: 22...50, lateral: 8...26)
         let level = biome.waterLevel ?? 0
-        let swimHeading = rng.range(0, 2 * .pi)
-        let dir = SIMD2(-sin(swimHeading), -cos(swimHeading))
         let speed: Float = 6.5
         let duration: Float = 16
+
+        /// Deep enough that a dolphin belongs there.
+        func isOpenWater(_ q: SIMD2<Float>) -> Bool {
+            biome.height(q) < level - 1.4
+        }
+
+        // On the shore most of the map is sand, so a spot has to be found rather
+        // than assumed — otherwise they leap out of dry ground.
+        var start: SIMD2<Float>?
+        var swimHeading: Float = 0
+        outer: for _ in 0..<26 {
+            let candidate = stageSpot(p, heading, distance: 22...60, lateral: 8...34)
+            guard isOpenWater(candidate) else { continue }
+            // The whole run has to stay wet, not just the entry point.
+            for _ in 0..<10 {
+                let course = rng.range(0, 2 * .pi)
+                let d = SIMD2(-sin(course), -cos(course))
+                var clear = true
+                for step in stride(from: Float(0), through: duration, by: 4) {
+                    if !isOpenWater(candidate + d * speed * step) { clear = false; break }
+                }
+                if clear {
+                    start = candidate
+                    swimHeading = course
+                    break outer
+                }
+            }
+        }
+
+        guard let spot = start else {
+            // No water within reach — send the gulls instead.
+            birds(near: p, heading: heading)
+            return
+        }
+
+        let pod = SCNNode()
+        let count = Int(rng.range(1, 3.49))
+        let dir = SIMD2(-sin(swimHeading), -cos(swimHeading))
 
         for i in 0..<count {
             let d = buildDolphin()
