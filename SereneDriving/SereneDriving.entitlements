@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<!--
-	  Push (OneSignal). Enabled on the App ID com.lno.serenedriving, so the provisioning
-	  profile carries it. Xcode rewrites this to `production` when archiving with a
-	  distribution profile.
+	  Push (OneSignal). `production` même en Debug : l'environnement APNs réel est choisi par
+	  le profil de provisionnement, et une valeur `development` dans un build distribué donne
+	  un jeton que le serveur APNs refuse en silence.
 	-->
 	<key>aps-environment</key>
-	<string>development</string>
+	<string>production</string>
 </dict>
 </plist>
