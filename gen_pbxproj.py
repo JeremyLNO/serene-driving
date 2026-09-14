@@ -47,6 +47,12 @@ PROJ_DEBUG = uid()
 PROJ_RELEASE = uid()
 TARGET_DEBUG = uid()
 TARGET_RELEASE = uid()
+# OneSignal (Crazy Bee Labs announcements). Pinned to an exact version on the Stable
+# track — a version *range* resolves to OneSignal's "Current" track instead. Only the
+# `OneSignalFramework` product is linked (no InAppMessages / Location).
+ONESIGNAL_PKG = uid()
+ONESIGNAL_PROD = uid()
+ONESIGNAL_BUILD_FILE = uid()
 
 
 def filetype(name):
@@ -77,6 +83,8 @@ for name in swift_files:
 for name in resources:
     w("\t\t%s /* %s in Resources */ = {isa = PBXBuildFile; fileRef = %s /* %s */; };"
       % (build[name], name, refs[name], name))
+w("\t\t%s /* OneSignalFramework in Frameworks */ = {isa = PBXBuildFile; productRef = %s /* OneSignalFramework */; };"
+  % (ONESIGNAL_BUILD_FILE, ONESIGNAL_PROD))
 w("/* End PBXBuildFile section */")
 
 w("\n/* Begin PBXFileReference section */")
@@ -92,6 +100,7 @@ w("\t\t%s = {" % FRAMEWORKS_PHASE)
 w("\t\t\tisa = PBXFrameworksBuildPhase;")
 w("\t\t\tbuildActionMask = 2147483647;")
 w("\t\t\tfiles = (")
+w("\t\t\t\t%s /* OneSignalFramework in Frameworks */," % ONESIGNAL_BUILD_FILE)
 w("\t\t\t);")
 w("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
 w("\t\t};")
@@ -139,6 +148,9 @@ w("\t\t\t);")
 w("\t\t\tdependencies = (")
 w("\t\t\t);")
 w("\t\t\tname = %s;" % TARGET)
+w("\t\t\tpackageProductDependencies = (")
+w("\t\t\t\t%s /* OneSignalFramework */," % ONESIGNAL_PROD)
+w("\t\t\t);")
 w("\t\t\tproductName = %s;" % TARGET)
 w("\t\t\tproductReference = %s;" % PRODUCT_REF)
 w("\t\t\tproductType = \"com.apple.product-type.application\";")
@@ -167,6 +179,9 @@ w("\t\t\t\ten,")
 w("\t\t\t\tBase,")
 w("\t\t\t);")
 w("\t\t\tmainGroup = %s;" % MAIN_GROUP)
+w("\t\t\tpackageReferences = (")
+w("\t\t\t\t%s /* XCRemoteSwiftPackageReference \"OneSignal-XCFramework\" */," % ONESIGNAL_PKG)
+w("\t\t\t);")
 w("\t\t\tproductRefGroup = %s /* Products */;" % PRODUCTS_GROUP)
 w("\t\t\tprojectDirPath = \"\";")
 w("\t\t\tprojectRoot = \"\";")
@@ -175,6 +190,25 @@ w("\t\t\t\t%s /* %s */," % (TARGET_ID, TARGET))
 w("\t\t\t);")
 w("\t\t};")
 w("/* End PBXProject section */")
+
+w("\n/* Begin XCRemoteSwiftPackageReference section */")
+w("\t\t%s /* XCRemoteSwiftPackageReference \"OneSignal-XCFramework\" */ = {" % ONESIGNAL_PKG)
+w("\t\t\tisa = XCRemoteSwiftPackageReference;")
+w("\t\t\trepositoryURL = \"https://github.com/OneSignal/OneSignal-XCFramework\";")
+w("\t\t\trequirement = {")
+w("\t\t\t\tkind = exactVersion;")
+w("\t\t\t\tversion = 5.5.1;")
+w("\t\t\t};")
+w("\t\t};")
+w("/* End XCRemoteSwiftPackageReference section */")
+
+w("\n/* Begin XCSwiftPackageProductDependency section */")
+w("\t\t%s /* OneSignalFramework */ = {" % ONESIGNAL_PROD)
+w("\t\t\tisa = XCSwiftPackageProductDependency;")
+w("\t\t\tpackage = %s /* XCRemoteSwiftPackageReference \"OneSignal-XCFramework\" */;" % ONESIGNAL_PKG)
+w("\t\t\tproductName = OneSignalFramework;")
+w("\t\t};")
+w("/* End XCSwiftPackageProductDependency section */")
 
 w("\n/* Begin PBXResourcesBuildPhase section */")
 w("\t\t%s = {" % RESOURCES_PHASE)
@@ -233,6 +267,7 @@ for conf_id, name, extra in [
 
 TARGET_COMMON = """\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 \t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+\t\t\t\tCODE_SIGN_ENTITLEMENTS = SereneDriving/SereneDriving.entitlements;
 \t\t\t\tCODE_SIGN_STYLE = Automatic;
 \t\t\t\tDEVELOPMENT_TEAM = 2E6D4Q69QB;
 \t\t\t\tCURRENT_PROJECT_VERSION = 1;

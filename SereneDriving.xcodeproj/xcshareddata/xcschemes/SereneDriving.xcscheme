@@ -5,7 +5,7 @@
          <BuildActionEntry buildForTesting = "YES" buildForRunning = "YES" buildForProfiling = "YES" buildForArchiving = "YES" buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AA0000000000000000000034"
+               BlueprintIdentifier = "AA0000000000000000000036"
                BuildableName = "SereneDriving.app"
                BlueprintName = "SereneDriving"
                ReferencedContainer = "container:SereneDriving.xcodeproj">
@@ -21,7 +21,7 @@
       <BuildableProductRunnable runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA0000000000000000000034"
+            BlueprintIdentifier = "AA0000000000000000000036"
             BuildableName = "SereneDriving.app"
             BlueprintName = "SereneDriving"
             ReferencedContainer = "container:SereneDriving.xcodeproj">
@@ -32,7 +32,7 @@
       <BuildableProductRunnable runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA0000000000000000000034"
+            BlueprintIdentifier = "AA0000000000000000000036"
             BuildableName = "SereneDriving.app"
             BlueprintName = "SereneDriving"
             ReferencedContainer = "container:SereneDriving.xcodeproj">
