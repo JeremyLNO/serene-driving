@@ -32,6 +32,7 @@ struct GameView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     @AppStorage("gameMode") private var storedMode: String = GameMode.serene.rawValue
+    @AppStorage("push.cbl.enabled") private var cblNews = false
 
     @State private var stickOrigin: CGPoint?
     @State private var stickPoint: CGPoint = .zero
@@ -275,6 +276,14 @@ struct GameView: View {
                     }
                     softButton("arrow.triangle.2.circlepath") {
                         host.world.skipToNextWorld()
+                    }
+                    // Nouvelles Crazy Bee Labs. Même geste que le bouton son : un
+                    // interrupteur d'un coup de pouce, sans écran de réglages — le jeu
+                    // n'en a pas. La permission système n'est demandée qu'à l'activation.
+                    softButton(cblNews ? "bell.fill" : "bell.slash") {
+                        cblNews.toggle()
+                        if cblNews { OneSignalPush.promptForPermission() }
+                        OneSignalPush.setOptedIn(cblNews)
                     }
                 }
                 .padding(.trailing, 22)
