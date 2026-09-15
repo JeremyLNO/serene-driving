@@ -171,7 +171,7 @@
 			);
 			mainGroup = AA0000000000000000000033;
 			packageReferences = (
-				AA0000000000000000000041 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */,
+				AA0000000000000000000041 /* XCLocalSwiftPackageReference "Vendor/OneSignalXCFramework" */,
 			);
 			productRefGroup = AA0000000000000000000035 /* Products */;
 			projectDirPath = "";
@@ -182,21 +182,17 @@
 		};
 /* End PBXProject section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		AA0000000000000000000041 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/OneSignal/OneSignal-XCFramework";
-			requirement = {
-				kind = exactVersion;
-				version = 5.5.1;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		AA0000000000000000000041 /* XCLocalSwiftPackageReference "Vendor/OneSignalXCFramework" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "Vendor/OneSignalXCFramework";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		AA0000000000000000000042 /* OneSignalFramework */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA0000000000000000000041 /* XCRemoteSwiftPackageReference "OneSignal-XCFramework" */;
+			package = AA0000000000000000000041 /* XCLocalSwiftPackageReference "Vendor/OneSignalXCFramework" */;
 			productName = OneSignalFramework;
 		};
 /* End XCSwiftPackageProductDependency section */
